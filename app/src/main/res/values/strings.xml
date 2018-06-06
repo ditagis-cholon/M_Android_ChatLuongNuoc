@@ -4,7 +4,7 @@
     <string name="license">runtimelite,1000,rud6046938574,none,4N5X0H4AH5JB003AD169</string>
     <string name="action_search">Tìm kiếm</string>
 
-    <string name="app_name">QL chất lượng nước Tân Hòa</string>
+    <string name="app_name">QL chất lượng nước Chợ Lớn</string>
     <string name="dialog_title_add">Thêm sự cố</string>
     <string name="btn_OK">OK</string>
     <string name="btn_Accept">Cập nhật</string>
@@ -98,10 +98,12 @@
     <string name="DATA_SUCCESSFULLY_INSERTED">Thêm dữ liệu thành công</string>
     <string name="FAILED_TO_INSERT_DATA">Thêm dữ liệu không thành công</string>
     <string name="DATA_SUCCESSFULLY_DELETED">Xóa dữ liệu thành công </string>
-    <string name="FAILED_TO_DELETE_DATA">Xóa dữ liệu không thành công</string>
-    <string name="DATA_SUCCESSFULLY_UPDATED">Cập nhật dữ liệu thành công </string>
+    <string name="DATA_SUCCESSFULLY_UPDATED">Cập nhật dữ liệu thành công </string>    <string name="FAILED_TO_DELETE_DATA">Xóa dữ liệu không thành công</string>
+
     <string name="FAILED_TO_UPDATE_DATA">Cập nhật dữ liệu không thành công</string>
     <string name="INCORRECT_INPUT_FORMAT">Số liệu nhập vào không đúng định dạng!!!</string>
+    <string name="name_nhanvien">Nhân viên A</string>
+    <string name="gmail_nhanvien">nva.cholon                                                                                                                                                                                                                                                                                                                                              @gmail.com</string>
 
 
 </resources>
