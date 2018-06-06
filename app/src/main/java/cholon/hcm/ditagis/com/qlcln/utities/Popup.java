@@ -148,7 +148,8 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_viewtablethoigian)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editingMauKiemNghiem.showThoiGianChatLuongNuoc(mSelectedArcGISFeature);
+                editingMauKiemNghiem.showDanhSachMauDanhGia(mSelectedArcGISFeature);
+
             }
         });
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
@@ -162,6 +163,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
+
                 deleteFeature();
             }
         });
@@ -471,6 +473,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                                             try {
                                                 edits = serverResult.get();
                                                 if (edits.size() > 0) {
+                                                    editingMauKiemNghiem.deleteDanhSachMauDanhGia(mSelectedArcGISFeature);
                                                     if (!edits.get(0).hasCompletedWithErrors()) {
                                                         Log.e("", "Feature successfully updated");
                                                     }

@@ -65,8 +65,20 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         this.featureLayerDTG_MauDanhGia = featureLayerDTG_MauDanhGia;
         table_maudanhgia = (ServiceFeatureTable) featureLayerDTG_MauDanhGia.getFeatureLayer().getFeatureTable();
     }
-
-    public void showThoiGianChatLuongNuoc(final ArcGISFeature mSelectedArcGISFeature) {
+    public void deleteDanhSachMauDanhGia(final ArcGISFeature mSelectedArcGISFeature) {
+        final Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
+        final String idDiemDanhGia = attributes.get(mainActivity.getString(R.string.IDDIEMDANHGIA)).toString();
+        this.idDiemDanhGia = idDiemDanhGia;
+        if (idDiemDanhGia != null) {
+            List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems = new ArrayList<>();
+            mauKiemNghiemApdapter = new MauKiemNghiemApdapter(mainActivity, mauKiemNghiems);
+            getRefreshTableThoiGianCLNAsync();
+            for (Feature feature:table_feature) {
+                deleteFeature(feature);
+            }
+        }
+    }
+    public void showDanhSachMauDanhGia(final ArcGISFeature mSelectedArcGISFeature) {
         final Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
         final String idDiemDanhGia = attributes.get(mainActivity.getString(R.string.IDDIEMDANHGIA)).toString();
         this.idDiemDanhGia = idDiemDanhGia;
