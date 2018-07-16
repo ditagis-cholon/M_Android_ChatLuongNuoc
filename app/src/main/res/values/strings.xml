@@ -1,3 +1,4 @@
+<!DOCTYPE resources [<!ENTITY table_sys_layer "ChoLonSystem..SYS_Layer"><!ENTITY table_sys_layer_account "ChoLonSystem..SYS_Layer_Account"><!ENTITY table_sys_account "ChoLonSystem..SYS_Account">]>
 <resources>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -29,6 +30,7 @@
     <!--DeclngayCapNhatalue config begin-->
     <!--Url-->
 
+    <!--<string name="url_service_diemdanhgianuoc">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/4</string>-->
     <string name="url_service_diemdanhgianuoc">http://sawagis.vn/arcgis/rest/services/ChoLon/ChoLon_ChatLuongNuoc/FeatureServer/0</string>
     <string name="url_service_maudanhgia">http://sawagis.vn/arcgis/rest/services/ChoLon/ChoLon_ChatLuongNuoc/FeatureServer/1</string>
     <!--<string name="url_service_diemdanhgianuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>-->
@@ -103,7 +105,36 @@
     <string name="FAILED_TO_UPDATE_DATA">Cập nhật dữ liệu không thành công</string>
     <string name="INCORRECT_INPUT_FORMAT">Số liệu nhập vào không đúng định dạng!!!</string>
     <string name="name_nhanvien">Nhân viên A</string>
-    <string name="gmail_nhanvien">nva.cholon                                                                                                                                                                                                                                                                                                                                              @gmail.com</string>
+    <string name="gmail_nhanvien">nva.cholon@gmail.com</string>
 
+    <!--preference begin-->
+    <string name="preference_username">username</string>
+    <string name="preference_password">pasword</string>
+    <string name="preference_displayname">displayname</string>
+    <!--preference end-->
+
+    <string name="action_logout">Đăng xuất</string>
+    <string name="validate_no_connect">Không có kết nối internet</string>
+    <string name="info_login_empty">Danh bạ hoặc mật khẩu không được để trống</string>
+    <string name="validate_login_fail">Sai danh bạ hoặc mật khẩu</string>
+    <string name="validate_hieuluc">Đồng hồ của khách hàng đã không còn hiệu lực\nVui lòng liên hệ công ty Cấp nước Tân Hòa\nđể biết thêm thông tin</string>
+    <string name="validate_tracuutiennuoc_invalidtime">Chưa đến đợt đọc số!\nVui lòng chọn thời gian khác để tra cứu</string>
+    <string name="sql_coloumn_login_status">status</string>
+
+
+
+    <!--sql column login begin-->
+    <string name="sql_coloumn_login_displayname">namedisplay</string>
+    <!--sql column login end-->
+
+    <string name="sql_login">select *
+					 from &table_sys_account;
+        where username = ? and password = ?</string>
+    <string name="encode_string">DITAGIS*#</string>
+
+    <!--sql end-->
+    <string name="find_khachhHang_message">Đang lấy thông tin khách hàng…</string>
+    <string name="connect_message">Đang kết nối đến máy chủ…</string>
+    <string name="login_message">Đang kiểm tra thông tin đăng nhập…</string>
 
 </resources>
