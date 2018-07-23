@@ -29,18 +29,17 @@
     <string name="attachment">attachment</string>
     <!--DeclngayCapNhatalue config begin-->
     <!--Url-->
-
-    <!--<string name="url_service_diemdanhgianuoc">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/4</string>-->
     <string name="url_service_diemdanhgianuoc">http://sawagis.vn/arcgis/rest/services/ChoLon/ChoLon_ChatLuongNuoc/FeatureServer/0</string>
+
     <string name="url_service_maudanhgia">http://sawagis.vn/arcgis/rest/services/ChoLon/ChoLon_ChatLuongNuoc/FeatureServer/1</string>
-    <!--<string name="url_service_diemdanhgianuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>-->
-    <!--<string name="url_service_maudanhgia">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/1</string>-->
     <!--Alias-->
-    <string name="alias_diemdanhgianuoc">Điểm đánh giá nước</string>
+    <string name="alias_diemdanhgianuoc">Điểm đánh giá</string>
     <string name="alias_maudanhgia">Mẫu đánh giá</string>
     <!--Name-->
     <string name="name_diemdanhgianuoc">DiemDanhGia</string>
     <string name="name_maudanhgia">HoSo_MauDanhGia</string>
+    <string name="id_diemdanhgianuoc">diemdanhgiaLYR</string>
+    <string name="id_maudanhgia">hs_maukiemnghiem_TBL</string>
     <!--DeclngayCapNhatalue config end-->
 
     <!--Attribute begin-->
@@ -124,7 +123,8 @@
 
 
     <!--sql column login begin-->
-    <string name="sql_coloumn_login_displayname">namedisplay</string>
+    <string name="sql_coloumn_login_displayname">DisplayName</string>
+    <string name="sql_coloumn_login_username">Username</string>
     <!--sql column login end-->
 
     <string name="sql_login">select *
@@ -136,5 +136,23 @@
     <string name="find_khachhHang_message">Đang lấy thông tin khách hàng…</string>
     <string name="connect_message">Đang kết nối đến máy chủ…</string>
     <string name="login_message">Đang kiểm tra thông tin đăng nhập…</string>
+
+
+    <string name="preparing">Đang khởi tạo bản đồ…</string>
+    <!--sql column login begin-->
+    <string name="sql_coloumn_sys_id">LayerID</string>
+    <string name="sql_coloumn_sys_title">LayerTitle</string>
+    <string name="sql_coloumn_sys_url">Url</string>
+    <string name="sql_coloumn_sys_iscreate">IsCreate</string>
+    <string name="sql_coloumn_sys_isdelete">IsDelete</string>
+    <string name="sql_coloumn_sys_isedit">IsEdit</string>
+    <string name="sql_coloumn_sys_isview">IsView</string>
+    <string name="sql_coloumn_sys_outfield">OutFields</string>
+    <string name="sql_coloumn_sys_definition">Definition</string>
+    <string name="sql_select_sys_layer">SELECT *  FROM &table_sys_layer;
+        l  inner join &table_sys_layer_account; la  on l.id = la.Layer  where account = ?</string>
+    <!--sql column login end-->
+    <string name="preference_login_api">preference_login_api</string>
+    <string name="IDLayer_Basemap">BASEMAP</string>
 
 </resources>

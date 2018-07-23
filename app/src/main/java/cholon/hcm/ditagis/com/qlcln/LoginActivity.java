@@ -7,8 +7,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import cholon.hcm.ditagis.com.qlcln.R;
+
 import cholon.hcm.ditagis.com.qlcln.async.LoginAsycn;
+import cholon.hcm.ditagis.com.qlcln.async.NewLoginAsycn;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.User;
 import cholon.hcm.ditagis.com.qlcln.utities.CheckConnectInternet;
 import cholon.hcm.ditagis.com.qlcln.utities.Preference;
@@ -31,7 +32,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mTxtUsername = findViewById(R.id.txtUsername);
         mTxtPassword = findViewById(R.id.txtPassword);
-
         mTxtValidation = findViewById(R.id.txt_login_validation);
         create();
     }
@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 //        handleLoginSuccess(userName,passWord);
         final String finalUserName = userName;
-        LoginAsycn loginAsycn = new LoginAsycn(this, new LoginAsycn.AsyncResponse() {
+        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, new LoginAsycn.AsyncResponse() {
 
             @Override
             public void processFinish(User output) {
@@ -101,13 +101,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void handleLoginSuccess(User user) {
-        mTxtUsername.setText("");
-        mTxtPassword.setText("");
 
-        Preference.getInstance().savePreferences(getString(R.string.preference_username), user.getUserName());
+
+        Preference.getInstance().savePreferences(getString(R.string.preference_username),user.getUserName());
         Preference.getInstance().savePreferences(getString(R.string.preference_password), user.getPassWord());
         Preference.getInstance().savePreferences(getString(R.string.preference_displayname), user.getDisplayName());
-
+        mTxtUsername.setText("");
+        mTxtPassword.setText("");
     Intent intent = new Intent(this, QuanLyChatLuongNuoc.class);
 
         startActivity(intent);

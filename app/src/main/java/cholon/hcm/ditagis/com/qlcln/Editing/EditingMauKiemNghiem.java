@@ -141,7 +141,9 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         Map<String, Object> attributes = feature.getAttributes();
         View layout_chitiet_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
         ListView listview_chitiet_maudanhgia = (ListView) layout_chitiet_maudanhgia.findViewById(R.id.listview);
-
+        if(attributes.get("IDMauKiemNghiem") != null){
+            ((TextView)layout_chitiet_maudanhgia.findViewById(R.id.txtTongItem)).setText(attributes.get("IDMauKiemNghiem").toString());
+        }
         final List<ChiTietMauKiemNghiemAdapter.Item> items = new ArrayList<>();
         List<Field> fields = table_maudanhgia.getFields();
         final String[] updateFields = featureLayerDTG_MauDanhGia.getUpdateFields();

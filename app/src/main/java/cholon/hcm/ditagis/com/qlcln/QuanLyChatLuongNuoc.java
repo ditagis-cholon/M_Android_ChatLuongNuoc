@@ -67,11 +67,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cholon.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
+import cholon.hcm.ditagis.com.qlcln.async.PreparingAsycn;
+import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.LayerInfoDTG;
+import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.ListObjectDB;
 import cholon.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import cholon.hcm.ditagis.com.qlcln.tools.TraCuu;
-import cholon.hcm.ditagis.com.qlcln.utities.Config;
+import cholon.hcm.ditagis.com.qlcln.utities.CheckConnectInternet;
 import cholon.hcm.ditagis.com.qlcln.utities.ImageFile;
-import cholon.hcm.ditagis.com.qlcln.utities.ListConfig;
 import cholon.hcm.ditagis.com.qlcln.utities.MapViewHandler;
 import cholon.hcm.ditagis.com.qlcln.utities.MySnackBar;
 import cholon.hcm.ditagis.com.qlcln.utities.Popup;
@@ -81,6 +83,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     private Uri mUri;
     private Popup popupInfos;
     private MapView mMapView;
+    private ArcGISMap mMap;
     private Callout mCallout;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
     private MapViewHandler mMapViewHandler;
@@ -107,11 +110,26 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         super.onCreate(savedInstanceState);
         setContentView(cholon.hcm.ditagis.com.qlcln.R.layout.activity_quan_ly_chat_luong_nuoc);
         setLicense();
-        //for camera
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        Toolbar toolbar = (Toolbar) findViewById(cholon.hcm.ditagis.com.qlcln.R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setUp();
+        initListViewSearch();
+        initMapView();
+
+
+        setOnClickListener();
+    }
+    private void setOnClickListener(){
+        findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
+        findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
+        findViewById(R.id.layout_layer_topo).setOnClickListener(this);
+        findViewById(R.id.floatBtnLayer).setOnClickListener(this);
+        findViewById(R.id.floatBtnAdd).setOnClickListener(this);
+        findViewById(R.id.btn_add_feature_close).setOnClickListener(this);
+        findViewById(R.id.btn_layer_close).setOnClickListener(this);
+        findViewById(R.id.img_layvitri).setOnClickListener(this);
+        findViewById(R.id.floatBtnLocation).setOnClickListener(this);
+        findViewById(R.id.floatBtnHome).setOnClickListener(this);
+    }
+    private void initListViewSearch(){
         this.mListViewSearch = findViewById(cholon.hcm.ditagis.com.qlcln.R.id.lstview_search);
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
@@ -127,6 +145,13 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
             }
         });
+    }
+    private void setUp(){
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        Toolbar toolbar = (Toolbar) findViewById(cholon.hcm.ditagis.com.qlcln.R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         requestPermisson();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -135,29 +160,81 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        mMapView = (MapView) findViewById(R.id.mapView);
 
-        // create an empty map instance
-        final ArcGISMap mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, LATITUDE, LONGTITUDE, LEVEL_OF_DETAIL);
+
+    }
+    private void initMapView() {
+        mMapView = findViewById(R.id.mapView);
+        mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, LATITUDE, LONGTITUDE, LEVEL_OF_DETAIL);
         mMapView.setMap(mMap);
         mCallout = mMapView.getCallout();
+        final PreparingAsycn preparingAsycn = new PreparingAsycn(this, new PreparingAsycn.AsyncResponse() {
+            @Override
+            public void processFinish(Void output) {
+                ListObjectDB.getInstance().getLstFeatureLayerDTG();
+                setFeatureService();
+            }
+        });
+        if (CheckConnectInternet.isOnline(this))
+            preparingAsycn.execute();
+        final EditText edit_latitude = ((EditText) findViewById(R.id.edit_latitude));
+        final EditText edit_longtitude = ((EditText) findViewById(R.id.edit_longtitude));
+        mMapView.setOnTouchListener(new DefaultMapViewOnTouchListener(this, mMapView) {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                try {
+                    mMapViewHandler.onSingleTapMapView(e);
+                } catch (ArcGISRuntimeException ex) {
+                    Log.d("", ex.toString());
+                }
+                return super.onSingleTapConfirmed(e);
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
+                edit_longtitude.setText(location[0] + "");
+                edit_latitude.setText(location[1] + "");
+                return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                return super.onScale(detector);
+            }
+        });
+        changeStatusOfLocationDataSource();
+        mLocationDisplay.addLocationChangedListener(new LocationDisplay.LocationChangedListener() {
+            @Override
+            public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+                Point position = locationChangedEvent.getLocation().getPosition();
+                edit_longtitude.setText(position.getX() + "");
+                edit_latitude.setText(position.getY() + "");
+                Geometry geometry = GeometryEngine.project(position, SpatialReferences.getWebMercator());
+                mMapView.setViewpointCenterAsync(geometry.getExtent().getCenter());
+            }
+        });
+
+    }
+
+    private void setFeatureService() {
         mFeatureLayerDTGS = new ArrayList<>();
-        // config feature layer service
-        List<Config> configs = ListConfig.getInstance(this).getConfigs();
-        for (Config config : configs) {
-            ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(config.getUrl());
+        for (final LayerInfoDTG layerInfoDTG : ListObjectDB.getInstance().getLstFeatureLayerDTG()) {
+            String url = layerInfoDTG.getUrl();
+            if (!layerInfoDTG.getUrl().startsWith("http"))
+                url = "http:" + layerInfoDTG.getUrl();
+            ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(url);
             FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
-            featureLayer.setName(config.getAlias());
+            featureLayer.setName(layerInfoDTG.getTitleLayer());
             featureLayer.setMaxScale(0);
             featureLayer.setMinScale(1000000);
-            featureLayer.setId(config.getName());
-            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer, config.getAlias(), config.isShowOnMap());
-            featureLayerDTG.setOutFields(config.getOutFields());
-            featureLayerDTG.setQueryFields(config.getQueryFields());
-            featureLayerDTG.setUpdateFields(config.getUpdateFields());
-            featureLayerDTG.setShowOnMap(config.isShowOnMap());
-
-            if (config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))) {
+            featureLayer.setId(layerInfoDTG.getId());
+            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer, layerInfoDTG.getTitleLayer(), layerInfoDTG.isView());
+            featureLayerDTG.setOutFields(getFieldsDTG(layerInfoDTG.getOutField()));
+            featureLayerDTG.setQueryFields(getFieldsDTG(layerInfoDTG.getOutField()));
+            featureLayerDTG.setUpdateFields(getFieldsDTG(layerInfoDTG.getOutField()));
+            featureLayerDTG.setShowOnMap(layerInfoDTG.isView());
+            if (layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_diemdanhgianuoc))) {
                 featureLayer.setPopupEnabled(true);
                 mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, QuanLyChatLuongNuoc.this);
                 traCuu = new TraCuu(featureLayerDTG, QuanLyChatLuongNuoc.this);
@@ -165,7 +242,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
         }
-        popupInfos = new Popup(QuanLyChatLuongNuoc.this,mMapView, mFeatureLayerDTGS, mCallout);
+        popupInfos = new Popup(QuanLyChatLuongNuoc.this, mMapView, mFeatureLayerDTGS, mCallout);
 
         mMapViewHandler.setPopupInfos(popupInfos);
         traCuu.setPopupInfos(popupInfos);
@@ -206,54 +283,19 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 }
             }
         });
-        changeStatusOfLocationDataSource();
+    }
 
-        final EditText edit_latitude = ((EditText) findViewById(R.id.edit_latitude));
-        final EditText edit_longtitude = ((EditText) findViewById(R.id.edit_longtitude));
-        mMapView.setOnTouchListener(new DefaultMapViewOnTouchListener(this, mMapView) {
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-                try {
-                    mMapViewHandler.onSingleTapMapView(e);
-                } catch (ArcGISRuntimeException ex) {
-                    Log.d("", ex.toString());
-                }
-                return super.onSingleTapConfirmed(e);
+    private String[] getFieldsDTG(String stringFields) {
+        String[] returnFields = null;
+        if (stringFields != null) {
+            if (stringFields == "*") {
+                returnFields = new String[]{"*"};
+            } else {
+                returnFields = stringFields.split(",");
             }
 
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
-                edit_longtitude.setText(location[0] + "");
-                edit_latitude.setText(location[1] + "");
-                return super.onScroll(e1, e2, distanceX, distanceY);
-            }
-
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                return super.onScale(detector);
-            }
-        });
-        mLocationDisplay.addLocationChangedListener(new LocationDisplay.LocationChangedListener() {
-            @Override
-            public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-                Point position = locationChangedEvent.getLocation().getPosition();
-                edit_longtitude.setText(position.getX() + "");
-                edit_latitude.setText(position.getY() + "");
-                Geometry geometry = GeometryEngine.project(position, SpatialReferences.getWebMercator());
-                mMapView.setViewpointCenterAsync(geometry.getExtent().getCenter());
-            }
-        });
-        findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
-        findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
-        findViewById(R.id.layout_layer_topo).setOnClickListener(this);
-        findViewById(R.id.floatBtnLayer).setOnClickListener(this);
-        findViewById(R.id.floatBtnAdd).setOnClickListener(this);
-        findViewById(R.id.btn_add_feature_close).setOnClickListener(this);
-        findViewById(R.id.btn_layer_close).setOnClickListener(this);
-        findViewById(R.id.img_layvitri).setOnClickListener(this);
-        findViewById(R.id.floatBtnLocation).setOnClickListener(this);
-        findViewById(R.id.floatBtnHome).setOnClickListener(this);
+        }
+        return returnFields;
     }
 
     private void setLicense() {

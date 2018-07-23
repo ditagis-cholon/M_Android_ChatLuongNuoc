@@ -73,11 +73,11 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
 
     public Popup(QuanLyChatLuongNuoc mainActivity,MapView mMapView,List<FeatureLayerDTG> layerDTGS, Callout callout) {
         this.mainActivity = mainActivity;
-        this.mServiceFeatureTable = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_diemdanhgianuoc));
+        this.mServiceFeatureTable = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.id_diemdanhgianuoc));
         this.mCallout = callout;
         this.mMapView = mMapView;
         this.table_thoigiancln = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
-        this.featureLayerDTG_MauDanhGia = getFeatureLayerDTG(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
+        this.featureLayerDTG_MauDanhGia = getFeatureLayerDTG(layerDTGS,mainActivity.getResources().getString(R.string.id_maudanhgia));
         this.editingMauKiemNghiem = new EditingMauKiemNghiem(mainActivity, featureLayerDTG_MauDanhGia);
 
     }
@@ -247,44 +247,33 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         }
         builder.setView(layout);
         builder.setCancelable(false);
-        builder.setPositiveButton("Thoát", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(mainActivity.getString(R.string.btn_Accept), null);
+        builder.setNeutralButton(mainActivity.getString(R.string.btn_Esc), null);
+        final AlertDialog dialog = builder.create();
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        builder.setPositiveButton(android.R.string.ok, null);
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-                builder.setMessage("Bạn có muốn cập nhật tất cả thay đổi?");
-                builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditAsync editAsync = new EditAsync(mainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
-                        try {
-                            Void aVoid = editAsync.execute(adapter).get();
-                            refressPopup();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-                alertDialog.show();
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });
-        AlertDialog dialog = builder.create();
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        dialog.show();
-
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditAsync editAsync = new EditAsync(mainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
+                try {
+                    editAsync.execute(adapter).get();
+                    refressPopup();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
@@ -416,6 +405,8 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                                     }
                                     break;
                                 case TEXT:
+                                    item.setValue(editText.getText().toString());
+                                    break;
                                 case SHORT:
                                     try {
                                         short x = Short.parseShort(editText.getText().toString());
