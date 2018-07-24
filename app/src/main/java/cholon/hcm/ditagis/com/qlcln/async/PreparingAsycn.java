@@ -48,7 +48,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            String API_URL = "http://sawagis.vn/cholon/api/layerinfo";
+            String API_URL = "http://gis.capnuoccholon.com.vn/cholon/api/layerinfo";
             URL url = new URL(API_URL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {

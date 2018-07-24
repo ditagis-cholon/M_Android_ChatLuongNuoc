@@ -24,7 +24,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     private ProgressDialog mDialog;
     private Context mContext;
     private LoginAsycn.AsyncResponse mDelegate;
-    String API_URL = "http://sawagis.vn/cholon/api/Login";
+    String API_URL = "http://gis.capnuoccholon.com.vn/cholon/api/Login";
 
     public interface AsyncResponse {
         void processFinish(User output);
@@ -88,7 +88,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     }
 
     private String getDisplayName() {
-        String API_URL = "http://sawagis.vn/cholon/api/Account/Profile";
+        String API_URL = "http://gis.capnuoccholon.com.vn/cholon/api/Account/Profile";
         String displayName = "";
         try {
             URL url = new URL(API_URL);
