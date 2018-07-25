@@ -183,6 +183,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 try {
+                    if(mMapViewHandler != null)
                     mMapViewHandler.onSingleTapMapView(e);
                 } catch (ArcGISRuntimeException ex) {
                     Log.d("", ex.toString());
@@ -192,9 +193,11 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
-                edit_longtitude.setText(location[0] + "");
-                edit_latitude.setText(location[1] + "");
+                if(mMapViewHandler != null) {
+                    double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
+                    edit_longtitude.setText(location[0] + "");
+                    edit_latitude.setText(location[1] + "");
+                }
                 return super.onScroll(e1, e2, distanceX, distanceY);
             }
 
@@ -213,6 +216,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 Geometry geometry = GeometryEngine.project(position, SpatialReferences.getWebMercator());
                 mMapView.setViewpointCenterAsync(geometry.getExtent().getCenter());
             }
+
         });
 
     }
@@ -238,9 +242,19 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 featureLayer.setPopupEnabled(true);
                 mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, QuanLyChatLuongNuoc.this);
                 traCuu = new TraCuu(featureLayerDTG, QuanLyChatLuongNuoc.this);
+                mFeatureLayerDTGS.add(featureLayerDTG);
+                mMap.getOperationalLayers().add(featureLayer);
             }
-            mFeatureLayerDTGS.add(featureLayerDTG);
-            mMap.getOperationalLayers().add(featureLayer);
+            if(layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_maudanhgia))){
+                mFeatureLayerDTGS.add(featureLayerDTG);
+            }
+
+
+        }
+        if(mFeatureLayerDTGS.size() == 0){
+            MySnackBar.make(mMapView,"Tài khoản không có quyền truy cập ứng dụng!!!",true);
+//            Toast.makeText(this, "Tài khoản không có quyền truy cập ứng dụng!!!", Toast.LENGTH_LONG).show();
+            return;
         }
         popupInfos = new Popup(QuanLyChatLuongNuoc.this, mMapView, mFeatureLayerDTGS, mCallout);
 

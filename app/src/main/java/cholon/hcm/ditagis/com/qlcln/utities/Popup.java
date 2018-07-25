@@ -235,6 +235,10 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                 }
                 item.setEdit(false);
                 for (String updateField : updateFields) {
+                    if(updateField.equals("*")){
+                        item.setEdit(true);
+                        break;
+                    }
                     if (item.getFieldName().equals(updateField)) {
                         item.setEdit(true);
                         break;
