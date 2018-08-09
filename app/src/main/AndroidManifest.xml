@@ -43,10 +43,6 @@
             android:name="cholon.hcm.ditagis.com.qlcln.ThongKeActivity"
             android:label="Thống kê"
             android:parentActivityName="cholon.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc" />
-        <activity android:name="cholon.hcm.ditagis.com.qlcln.SettingsActivity"
-            android:label="Cài đặt"
-            android:parentActivityName="cholon.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc"
-            ></activity>
     </application>
 
 </manifest>

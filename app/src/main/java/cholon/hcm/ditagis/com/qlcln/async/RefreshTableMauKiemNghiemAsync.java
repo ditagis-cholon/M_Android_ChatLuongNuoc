@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 import cholon.hcm.ditagis.com.qlcln.R;
 import cholon.hcm.ditagis.com.qlcln.adapter.MauKiemNghiemApdapter;
+import cholon.hcm.ditagis.com.qlcln.libs.Action;
 
 /**
  * Created by ThanLe on 4/16/2018.
@@ -27,6 +28,7 @@ public class RefreshTableMauKiemNghiemAsync extends AsyncTask<String, List<MauKi
     private Context mContext;
     private ServiceFeatureTable table_thoigiancln;
     private MauKiemNghiemApdapter mauKiemNghiemApdapter;
+    private Action action;
 
     public interface AsyncResponse {
         void processFinish(List<Feature> features, List<MauKiemNghiemApdapter.MauKiemNghiem> thoiGianChatLuongNuocs);
@@ -34,12 +36,13 @@ public class RefreshTableMauKiemNghiemAsync extends AsyncTask<String, List<MauKi
 
     private AsyncResponse delegate = null;
 
-    public RefreshTableMauKiemNghiemAsync(Context context, ServiceFeatureTable table_thoigiancln, MauKiemNghiemApdapter mauKiemNghiemApdapter, AsyncResponse asyncResponse) {
+    public RefreshTableMauKiemNghiemAsync(Context context, ServiceFeatureTable table_thoigiancln, MauKiemNghiemApdapter mauKiemNghiemApdapter, Action action, AsyncResponse asyncResponse) {
         this.delegate = asyncResponse;
         mContext = context;
         this.table_thoigiancln = table_thoigiancln;
         this.mauKiemNghiemApdapter = mauKiemNghiemApdapter;
         dialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
+        this.action = action;
     }
 
     @Override
@@ -74,7 +77,9 @@ public class RefreshTableMauKiemNghiemAsync extends AsyncTask<String, List<MauKi
                         mauKiemNghiem.setOBJECTID(feature.getAttributes().get("OBJECTID").toString());
                         mauKiemNghiem.setIdMauKiemNghiem(getValueAttributes(feature, mContext.getString(R.string.IDMAUKIEMNGHIEM)));
                         mauKiemNghiem.setTenMau(getValueAttributes(feature, mContext.getString(R.string.TENMAU)));
+                        mauKiemNghiem.setView(action.isView());
                         mauKiemNghiems.add(mauKiemNghiem);
+
                     }
                     delegate.processFinish(features, mauKiemNghiems);
                     publishProgress(mauKiemNghiems);

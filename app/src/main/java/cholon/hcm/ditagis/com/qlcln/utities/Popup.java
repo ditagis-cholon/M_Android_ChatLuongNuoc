@@ -145,28 +145,38 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         linearLayout = (LinearLayout) inflater.inflate(R.layout.popup_diemdanhgianuoc, null);
         refressPopup();
 
-        ((ImageButton) linearLayout.findViewById(R.id.imgBtn_viewtablethoigian)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editingMauKiemNghiem.showDanhSachMauDanhGia(mSelectedArcGISFeature);
 
-            }
-        });
-        ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewMoreInfo();
-            }
-        });
+        if (mFeatureLayerDTG.getAction().isEdit()) {
+            ImageButton imgBtn_ViewMoreInfo = (ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo);
+            imgBtn_ViewMoreInfo.setVisibility(View.VISIBLE);
+            imgBtn_ViewMoreInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewMoreInfo();
+                }
+            });
 
-        ((ImageButton) linearLayout.findViewById(R.id.imgBtn_delete)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
+            ImageButton imgBtn_viewtablethoigian = (ImageButton) linearLayout.findViewById(R.id.imgBtn_viewtablethoigian);
+            imgBtn_viewtablethoigian.setVisibility(View.VISIBLE);
+            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_viewtablethoigian)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editingMauKiemNghiem.showDanhSachMauDanhGia(mSelectedArcGISFeature);
 
-                deleteFeature();
-            }
-        });
+                }
+            });
+        }
+        if (mFeatureLayerDTG.getAction().isEdit()) {
+            ImageButton imgBtn_delete = (ImageButton) linearLayout.findViewById(R.id.imgBtn_delete);
+            imgBtn_delete.setVisibility(View.VISIBLE);
+            imgBtn_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
+                    deleteFeature();
+                }
+            });
+        }
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
         Envelope envelope1 = new Envelope(new Point(envelope.getXMin(), envelope.getYMin() + DELTA_MOVE_Y), new Point(envelope.getXMax(), envelope.getYMax() + DELTA_MOVE_Y));
@@ -362,7 +372,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                                     public void onClick(View view) {
                                         DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
                                         Calendar calendar = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                                        String s = String.format("%02d_%02d_%d", datePicker.getDayOfMonth(), datePicker.getMonth(), datePicker.getYear());
+                                        String s = String.format("%02d/%02d/%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
 
                                         textView.setText(s);
                                         alertDialog.dismiss();
@@ -405,7 +415,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                                         double x = Double.parseDouble(editText.getText().toString());
                                         item.setValue(editText.getText().toString());
                                     } catch (Exception e) {
-                                        Toast.makeText(mainActivity, "Số liệu nhập vào không đúng định dạng!!!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(mainActivity, R.string.input_format_incorrect, Toast.LENGTH_LONG).show();
                                     }
                                     break;
                                 case TEXT:
@@ -416,7 +426,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                                         short x = Short.parseShort(editText.getText().toString());
                                         item.setValue(editText.getText().toString());
                                     } catch (Exception e) {
-                                        Toast.makeText(mainActivity, "Số liệu nhập vào không đúng định dạng!!!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(mainActivity,  R.string.input_format_incorrect, Toast.LENGTH_LONG).show();
                                     }
                                     break;
                             }
@@ -439,7 +449,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private void deleteFeature() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Material_Light_Dialog_Alert);
         builder.setTitle("Xác nhận");
-        builder.setMessage("Bạn có chắc chắn xóa sự cố này?");
+        builder.setMessage(R.string.question_delete_point);
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

@@ -91,6 +91,9 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
 
             ((TextView) layout_table_maudanhgia.findViewById(R.id.txtTitlePopup)).setText(mainActivity.getString(R.string.title_danhsachmaukiemnghiem));
             Button btnAdd = (Button) layout_table_maudanhgia.findViewById(R.id.btnAdd);
+            if (this.featureLayerDTG_MauDanhGia.getAction().isCreate() == false) {
+                btnAdd.setVisibility(View.INVISIBLE);
+            }
             btnAdd.setText("Thêm dữ liệu");
             btnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -101,32 +104,33 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                    final MauKiemNghiemApdapter.MauKiemNghiem itemAtPosition = mauKiemNghiemApdapter.getMauKiemNghiems().get(position);
-                    String objectid = itemAtPosition.getOBJECTID();
-                    QueryParameters queryParameters = new QueryParameters();
-                    String queryClause = mainActivity.getString(R.string.OBJECTID) + " = " + objectid;
-                    queryParameters.setWhereClause(queryClause);
-                    final ListenableFuture<FeatureQueryResult> queryResultListenableFuture = table_maudanhgia.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
-                    queryResultListenableFuture.addDoneListener(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                FeatureQueryResult result = queryResultListenableFuture.get();
-                                Iterator iterator = result.iterator();
+                    if(featureLayerDTG_MauDanhGia.getAction().isView()){
+                        final MauKiemNghiemApdapter.MauKiemNghiem itemAtPosition = mauKiemNghiemApdapter.getMauKiemNghiems().get(position);
+                        String objectid = itemAtPosition.getOBJECTID();
+                        QueryParameters queryParameters = new QueryParameters();
+                        String queryClause = mainActivity.getString(R.string.OBJECTID) + " = " + objectid;
+                        queryParameters.setWhereClause(queryClause);
+                        final ListenableFuture<FeatureQueryResult> queryResultListenableFuture = table_maudanhgia.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
+                        queryResultListenableFuture.addDoneListener(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    FeatureQueryResult result = queryResultListenableFuture.get();
+                                    Iterator iterator = result.iterator();
 
-                                if (iterator.hasNext()) {
-                                    Feature feature = (Feature) iterator.next();
-                                    showInfosSelectedItem(feature);
+                                    if (iterator.hasNext()) {
+                                        Feature feature = (Feature) iterator.next();
+                                        showInfosSelectedItem(feature);
+                                    }
+
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
                                 }
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
                             }
-                        }
-                    });
-
+                        });
+                    }
                 }
             });
             List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems = new ArrayList<>();
@@ -170,13 +174,15 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                             item.setValue(attributes.get(field.getName()).toString());
                 }
             }
-            for (String updateField : updateFields) {
-                if(updateField.equals("*")){
-                    item.setEdit(true);
-                    break;
-                }
-                if (field.getName().equals(updateField)) {
-                    item.setEdit(true);
+            if(this.featureLayerDTG_MauDanhGia.getAction().isEdit()){
+                for (String updateField : updateFields) {
+                    if (updateField.equals("*")) {
+                        item.setEdit(true);
+                        break;
+                    }
+                    if (field.getName().equals(updateField)) {
+                        item.setEdit(true);
+                    }
                 }
             }
             items.add(item);
@@ -185,13 +191,19 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         if (items != null) listview_chitiet_maudanhgia.setAdapter(chiTietMauKiemNghiemAdapter);
         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
         builder.setView(layout_chitiet_maudanhgia);
-        builder.setPositiveButton(mainActivity.getString(R.string.btn_Accept), null);
-        builder.setNegativeButton(mainActivity.getString(R.string.btn_Delete), null);
+        if(this.featureLayerDTG_MauDanhGia.getAction().isEdit()) {
+            builder.setPositiveButton(mainActivity.getString(R.string.btn_Accept), null);
+        }
+        if(this.featureLayerDTG_MauDanhGia.getAction().isDelete()) {
+            builder.setNegativeButton(mainActivity.getString(R.string.btn_Delete), null);
+        }
         builder.setNeutralButton(mainActivity.getString(R.string.btn_Esc), null);
         listview_chitiet_maudanhgia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                editValueAttribute(parent, view, position, id);
+                if(featureLayerDTG_MauDanhGia.getAction().isEdit()) {
+                    editValueAttribute(parent, view, position, id);
+                }
             }
         });
         final AlertDialog dialog = builder.create();
@@ -254,7 +266,9 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
     }
 
     private void getRefreshTableThoiGianCLNAsync() {
-        new RefreshTableMauKiemNghiemAsync(mainActivity, table_maudanhgia, mauKiemNghiemApdapter, new RefreshTableMauKiemNghiemAsync.AsyncResponse() {
+        new RefreshTableMauKiemNghiemAsync(mainActivity, table_maudanhgia,
+                mauKiemNghiemApdapter,this.featureLayerDTG_MauDanhGia.getAction(),
+                new RefreshTableMauKiemNghiemAsync.AsyncResponse() {
             @Override
             public void processFinish(List<Feature> features, List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems) {
                 table_feature = features;
@@ -532,7 +546,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                                 public void onClick(View view) {
                                     DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
                                     calendar[0] = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                                    String date = String.format("%02d_%02d_%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
+                                    String date = String.format("%02d/%02d/%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
                                     textView.setText(date);
                                     alertDialog.dismiss();
                                 }

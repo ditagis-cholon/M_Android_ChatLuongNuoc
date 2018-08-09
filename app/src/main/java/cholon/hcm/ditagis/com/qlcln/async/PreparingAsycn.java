@@ -26,6 +26,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     private ProgressDialog mDialog;
     private Context mContext;
     private AsyncResponse mDelegate;
+    private String API_URL;
 
     public interface AsyncResponse {
         void processFinish(Void output);
@@ -34,6 +35,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     public PreparingAsycn(Context context, AsyncResponse delegate) {
         this.mContext = context;
         this.mDelegate = delegate;
+        this.API_URL = mContext.getString(R.string.URL_API) + "/api/LayerInfo";
     }
 
     @Override
@@ -48,8 +50,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            String API_URL = "http://gis.capnuoccholon.com.vn/cholon/api/layerinfo";
-            URL url = new URL(API_URL);
+            URL url = new URL(this.API_URL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);

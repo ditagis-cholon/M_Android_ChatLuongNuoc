@@ -14,7 +14,7 @@ public class FeatureLayerDTG {
     private String[] queryFields;
     private String[] outFields;
     private String titleLayer;
-    private boolean isShowOnMap;
+    private Action action;
 
     public String[] getUpdateFields() {
         return updateFields;
@@ -23,21 +23,19 @@ public class FeatureLayerDTG {
     public void setUpdateFields(String[] updateFields) {
         this.updateFields = updateFields;
     }
-
-    public FeatureLayerDTG(FeatureLayer featureLayer, String titleLayer, boolean isShowOnMap) {
+    public FeatureLayerDTG(FeatureLayer featureLayer, String titleLayer, Action action) {
         this.featureLayer = featureLayer;
         this.titleLayer = titleLayer;
-        this.isShowOnMap = isShowOnMap;
+        this.action = action;
     }
 
-    public boolean isShowOnMap() {
-        return isShowOnMap;
+    public Action getAction() {
+        return action;
     }
 
-    public void setShowOnMap(boolean showOnMap) {
-        isShowOnMap = showOnMap;
+    public void setAction(Action action) {
+        this.action = action;
     }
-
     public FeatureLayer getFeatureLayer() {
         return featureLayer;
     }

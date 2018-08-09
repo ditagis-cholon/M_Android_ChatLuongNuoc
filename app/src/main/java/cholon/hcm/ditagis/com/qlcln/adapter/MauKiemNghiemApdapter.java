@@ -8,10 +8,13 @@ import android.view.View;
 
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.List;
 
 import cholon.hcm.ditagis.com.qlcln.R;
+
 public class MauKiemNghiemApdapter extends ArrayAdapter<MauKiemNghiemApdapter.MauKiemNghiem> {
     private Context context;
     private List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems;
@@ -54,23 +57,30 @@ public class MauKiemNghiemApdapter extends ArrayAdapter<MauKiemNghiemApdapter.Ma
         MauKiemNghiem mauKiemNghiem = mauKiemNghiems.get(position);
         TextView textViewItem1 = (TextView) convertView.findViewById(R.id.txtItem1);
         TextView textViewItem2 = (TextView) convertView.findViewById(R.id.txtItem2);
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.img_Item);
         textViewItem1.setText(mauKiemNghiem.getIdMauKiemNghiem());
         textViewItem2.setText(mauKiemNghiem.getTenMau());
+        if (mauKiemNghiem.isView) {
+            imageView.setVisibility(View.VISIBLE);
+        } else imageView.setVisibility(View.GONE);
         return convertView;
     }
 
-    public static class MauKiemNghiem{
+    public static class MauKiemNghiem {
         private String OBJECTID;
         private String idMauKiemNghiem;
         private String tenMau;
+        private Boolean isView;
 
         public MauKiemNghiem() {
         }
 
-        public MauKiemNghiem(String OBJECTID, String idMauKiemNghiem, String tenMau) {
-            this.OBJECTID = OBJECTID;
-            this.idMauKiemNghiem = idMauKiemNghiem;
-            this.tenMau = tenMau;
+        public Boolean isView() {
+            return isView;
+        }
+
+        public void setView(Boolean isView) {
+            this.isView = isView;
         }
 
         public String getOBJECTID() {

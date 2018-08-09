@@ -30,19 +30,28 @@ import java.util.TimeZone;
 import cholon.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import cholon.hcm.ditagis.com.qlcln.adapter.ThongKeAdapter;
 import cholon.hcm.ditagis.com.qlcln.async.QueryDiemDanhGiaAsync;
+import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.LayerInfoDTG;
+import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.ListObjectDB;
 import cholon.hcm.ditagis.com.qlcln.utities.TimePeriodReport;
 
 public class ThongKeActivity extends AppCompatActivity {
     private TextView txtTongItem;
     private ServiceFeatureTable serviceFeatureTable;
     private ThongKeAdapter thongKeAdapter;
-    private List<Feature> table_feature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke);
-        serviceFeatureTable = new ServiceFeatureTable(getResources().getString(R.string.url_service_diemdanhgianuoc));
+        for (final LayerInfoDTG layerInfoDTG : ListObjectDB.getInstance().getLstFeatureLayerDTG()) {
+            if (layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_diemdanhgianuoc))) {
+                String url = layerInfoDTG.getUrl();
+                if (!layerInfoDTG.getUrl().startsWith("http"))
+                    url = "http:" + layerInfoDTG.getUrl();
+                serviceFeatureTable = new ServiceFeatureTable(url);
+            }
+        }
+
         TimePeriodReport timePeriodReport = new TimePeriodReport(this);
         List<ThongKeAdapter.Item> items = new ArrayList<>();
         items = timePeriodReport.getItems();
@@ -162,7 +171,7 @@ public class ThongKeActivity extends AppCompatActivity {
                     calendar.set(Calendar.HOUR_OF_DAY, 23);
                     calendar.set(Calendar.MINUTE, 59);
                     calendar.set(Calendar.SECOND, 59);
-                    calendar.set(Calendar.MILLISECOND,999);
+                    calendar.set(Calendar.MILLISECOND, 999);
                 }
                 SimpleDateFormat dateFormatGmt = new SimpleDateFormat(getString(R.string.format_day_yearfirst));
                 dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -194,6 +203,7 @@ public class ThongKeActivity extends AppCompatActivity {
 
 
     }
+
     private void getQueryDiemDanhGiaAsync(String whereClause) {
         ListView listView = (ListView) findViewById(R.id.listview);
         final List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
@@ -208,22 +218,13 @@ public class ThongKeActivity extends AppCompatActivity {
                 finish();
             }
         });
-        new QueryDiemDanhGiaAsync(this, serviceFeatureTable,txtTongItem, adapter, new QueryDiemDanhGiaAsync.AsyncResponse() {
-            public void processFinish(List<Feature> features) {
-                table_feature = features;
-            }
-        }).execute(whereClause);
+        if (serviceFeatureTable != null)
+            new QueryDiemDanhGiaAsync(this, serviceFeatureTable, txtTongItem, adapter, new QueryDiemDanhGiaAsync.AsyncResponse() {
+                public void processFinish(List<Feature> features) {
+                }
+            }).execute(whereClause);
     }
-    private Feature getSelectedFeature(String OBJECTID) {
-        Feature rt_feature = null;
-        for (Feature feature : table_feature) {
-            Object objectID = feature.getAttributes().get(getString(R.string.OBJECTID));
-            if (objectID != null && objectID.toString().equals(OBJECTID)) {
-                rt_feature = feature;
-            }
-        }
-        return rt_feature;
-    }
+
 
 
 }

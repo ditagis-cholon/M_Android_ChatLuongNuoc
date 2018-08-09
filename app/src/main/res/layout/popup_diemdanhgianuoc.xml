@@ -64,6 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
+            android:visibility="gone"
             android:paddingRight="@dimen/padding_title_popup"
             android:src="@drawable/ic_table" />
         <ImageButton
@@ -72,6 +73,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:paddingRight="@dimen/padding_title_popup"
+            android:visibility="gone"
             android:src="@drawable/ic_info" />
 
         <ImageButton
@@ -79,6 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
+            android:visibility="gone"
             android:paddingRight="@dimen/padding_title_popup"
             android:src="@drawable/ic_delete" />
     </LinearLayout>

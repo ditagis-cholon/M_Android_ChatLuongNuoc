@@ -70,6 +70,7 @@ import cholon.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import cholon.hcm.ditagis.com.qlcln.async.PreparingAsycn;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.LayerInfoDTG;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.ListObjectDB;
+import cholon.hcm.ditagis.com.qlcln.libs.Action;
 import cholon.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import cholon.hcm.ditagis.com.qlcln.tools.TraCuu;
 import cholon.hcm.ditagis.com.qlcln.utities.CheckConnectInternet;
@@ -117,7 +118,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
         setOnClickListener();
     }
-    private void setOnClickListener(){
+
+    private void setOnClickListener() {
         findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_topo).setOnClickListener(this);
@@ -129,7 +131,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         findViewById(R.id.floatBtnLocation).setOnClickListener(this);
         findViewById(R.id.floatBtnHome).setOnClickListener(this);
     }
-    private void initListViewSearch(){
+
+    private void initListViewSearch() {
         this.mListViewSearch = findViewById(cholon.hcm.ditagis.com.qlcln.R.id.lstview_search);
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
@@ -146,7 +149,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             }
         });
     }
-    private void setUp(){
+
+    private void setUp() {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
         Toolbar toolbar = (Toolbar) findViewById(cholon.hcm.ditagis.com.qlcln.R.id.toolbar);
@@ -163,6 +167,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
 
     }
+
     private void initMapView() {
         mMapView = findViewById(R.id.mapView);
         mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, LATITUDE, LONGTITUDE, LEVEL_OF_DETAIL);
@@ -183,8 +188,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 try {
-                    if(mMapViewHandler != null)
-                    mMapViewHandler.onSingleTapMapView(e);
+                    if (mMapViewHandler != null)
+                        mMapViewHandler.onSingleTapMapView(e);
                 } catch (ArcGISRuntimeException ex) {
                     Log.d("", ex.toString());
                 }
@@ -193,7 +198,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                if(mMapViewHandler != null) {
+                if (mMapViewHandler != null) {
                     double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
                     edit_longtitude.setText(location[0] + "");
                     edit_latitude.setText(location[1] + "");
@@ -233,11 +238,11 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             featureLayer.setMaxScale(0);
             featureLayer.setMinScale(1000000);
             featureLayer.setId(layerInfoDTG.getId());
-            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer, layerInfoDTG.getTitleLayer(), layerInfoDTG.isView());
+            Action action = new Action(layerInfoDTG.isView(), layerInfoDTG.isCreate(), layerInfoDTG.isEdit(), layerInfoDTG.isDelete());
+            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer, layerInfoDTG.getTitleLayer(), action);
             featureLayerDTG.setOutFields(getFieldsDTG(layerInfoDTG.getOutField()));
             featureLayerDTG.setQueryFields(getFieldsDTG(layerInfoDTG.getOutField()));
             featureLayerDTG.setUpdateFields(getFieldsDTG(layerInfoDTG.getOutField()));
-            featureLayerDTG.setShowOnMap(layerInfoDTG.isView());
             if (layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_diemdanhgianuoc))) {
                 featureLayer.setPopupEnabled(true);
                 mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, QuanLyChatLuongNuoc.this);
@@ -245,15 +250,14 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 mFeatureLayerDTGS.add(featureLayerDTG);
                 mMap.getOperationalLayers().add(featureLayer);
             }
-            if(layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_maudanhgia))){
+            if (layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_maudanhgia))) {
                 mFeatureLayerDTGS.add(featureLayerDTG);
             }
 
 
         }
-        if(mFeatureLayerDTGS.size() == 0){
-            MySnackBar.make(mMapView,"Tài khoản không có quyền truy cập ứng dụng!!!",true);
-//            Toast.makeText(this, "Tài khoản không có quyền truy cập ứng dụng!!!", Toast.LENGTH_LONG).show();
+        if (mFeatureLayerDTGS.size() == 0) {
+            MySnackBar.make(mMapView, getString(R.string.no_access_permissions), true);
             return;
         }
         popupInfos = new Popup(QuanLyChatLuongNuoc.this, mMapView, mFeatureLayerDTGS, mCallout);
@@ -267,7 +271,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 int states[][] = {{android.R.attr.state_checked}, {}};
                 int colors[] = {R.color.colorTextColor_1, R.color.colorTextColor_1};
                 for (final FeatureLayerDTG layer : mFeatureLayerDTGS) {
-                    if (layer.isShowOnMap()) {
+                    if (layer.getFeatureLayer().getId() != null && layer.getFeatureLayer().getId().equals(getString(R.string.id_diemdanhgianuoc))) {
                         CheckBox checkBox = new CheckBox(linnearDisplayLayer.getContext());
                         checkBox.setText(layer.getTitleLayer());
                         checkBox.setChecked(true);
@@ -412,20 +416,12 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 //            final Intent intent = new Intent(this, TraCuuActivity.class);
 //            this.startActivityForResult(intent, 1);
             traCuu.start();
-        } else if (id == R.id.nav_setting) {
-            final Intent intent = new Intent(this, SettingsActivity.class);
-            this.startActivityForResult(intent, 1);
         } else if (id == R.id.nav_logOut) {
             this.finish();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void add() {
-        Toast.makeText(mMapView.getContext().getApplicationContext(), getString(R.string.notify_add_feature), Toast.LENGTH_LONG).show();
-        mMapViewHandler.setClickBtnAdd(true);
     }
 
     public boolean requestPermisson() {
