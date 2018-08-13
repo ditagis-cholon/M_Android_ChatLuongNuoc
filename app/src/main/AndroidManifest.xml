@@ -39,6 +39,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="cholon.hcm.ditagis.com.qlcln.ThongKeActivity"
             android:label="Thống kê"

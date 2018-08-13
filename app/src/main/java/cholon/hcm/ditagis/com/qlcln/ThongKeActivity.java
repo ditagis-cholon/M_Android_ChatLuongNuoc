@@ -43,6 +43,7 @@ public class ThongKeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke);
+        List<ThongKeAdapter.Item> items = new ArrayList<>();
         for (final LayerInfoDTG layerInfoDTG : ListObjectDB.getInstance().getLstFeatureLayerDTG()) {
             if (layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(R.string.id_diemdanhgianuoc))) {
                 String url = layerInfoDTG.getUrl();
@@ -52,8 +53,9 @@ public class ThongKeActivity extends AppCompatActivity {
             }
         }
 
+
         TimePeriodReport timePeriodReport = new TimePeriodReport(this);
-        List<ThongKeAdapter.Item> items = new ArrayList<>();
+
         items = timePeriodReport.getItems();
         thongKeAdapter = new ThongKeAdapter(this, items);
 
