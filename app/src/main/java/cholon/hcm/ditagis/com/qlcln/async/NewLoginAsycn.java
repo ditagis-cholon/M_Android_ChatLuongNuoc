@@ -17,6 +17,7 @@ import java.net.URL;
 import cholon.hcm.ditagis.com.qlcln.R;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.User;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.UserDangNhap;
+import cholon.hcm.ditagis.com.qlcln.utities.Constant;
 import cholon.hcm.ditagis.com.qlcln.utities.Preference;
 
 public class NewLoginAsycn extends AsyncTask<String, Void, User> {
@@ -24,7 +25,6 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     private ProgressDialog mDialog;
     private Context mContext;
     private LoginAsycn.AsyncResponse mDelegate;
-    private String API_URL;
 
     public interface AsyncResponse {
         void processFinish(User output);
@@ -33,7 +33,6 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     public NewLoginAsycn(Context context, LoginAsycn.AsyncResponse delegate) {
         this.mContext = context;
         this.mDelegate = delegate;
-        this.API_URL = mContext.getString(R.string.URL_API) + "/api/Login";
     }
 
     protected void onPreExecute() {
@@ -48,10 +47,11 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     protected User doInBackground(String... params) {
         String userName = params[0];
         String pin = params[1];
+        UserDangNhap.getInstance().setUser(null);
 //        String passEncoded = (new EncodeMD5()).encode(pin + "_DITAGIS");
         // Do some validation here
         String urlParameters = String.format("Username=%s&Password=%s", userName, pin);
-        String urlWithParam = String.format("%s?%s", API_URL, urlParameters);
+        String urlWithParam = String.format("%s?%s", Constant.getInstance().API_LOGIN, urlParameters);
         try {
 //            + "&apiKey=" + API_KEY
             URL url = new URL(urlWithParam);
@@ -68,11 +68,16 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
                 }
                 Preference.getInstance().savePreferences(mContext.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"", ""));
                 bufferedReader.close();
-                getDisplayName();
+                if (checkAccess()) {
+                    UserDangNhap.getInstance().setUser(new User());
+                    UserDangNhap.getInstance().getUser().setDisplayName(getDisplayName());
 
-                return UserDangNhap.getInstance().getUser();
+                }
+
+
             } finally {
                 conn.disconnect();
+                return UserDangNhap.getInstance().getUser();
             }
         } catch (Exception e) {
             Log.e("ERROR", e.getMessage(), e);
@@ -88,11 +93,38 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
 //        }
     }
 
+    private Boolean checkAccess() {
+        boolean isAccess = false;
+        try {
+            URL url = new URL(Constant.getInstance().IS_ACCESS);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            try {
+                conn.setDoOutput(false);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", Preference.getInstance().loadPreference(mContext.getString(R.string.preference_login_api)));
+                conn.connect();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String line = bufferedReader.readLine();
+                if (line.equals("true"))
+                    isAccess = true;
+
+            } catch (Exception e) {
+                Log.e("error", e.toString());
+            } finally {
+                conn.disconnect();
+            }
+        } catch (Exception e) {
+            Log.e("error", e.toString());
+        } finally {
+            return isAccess;
+        }
+    }
+
     private String getDisplayName() {
-        String API_URL = mContext.getString(R.string.URL_API) + "/api/Account/Profile";
         String displayName = "";
         try {
-            URL url = new URL(API_URL);
+            URL url = new URL(Constant.getInstance().DISPLAY_NAME);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);

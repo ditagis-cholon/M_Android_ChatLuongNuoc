@@ -19,6 +19,7 @@ import java.util.List;
 import cholon.hcm.ditagis.com.qlcln.R;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.LayerInfoDTG;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.ListObjectDB;
+import cholon.hcm.ditagis.com.qlcln.utities.Constant;
 import cholon.hcm.ditagis.com.qlcln.utities.Preference;
 
 
@@ -26,7 +27,6 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     private ProgressDialog mDialog;
     private Context mContext;
     private AsyncResponse mDelegate;
-    private String API_URL;
 
     public interface AsyncResponse {
         void processFinish(Void output);
@@ -35,7 +35,6 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     public PreparingAsycn(Context context, AsyncResponse delegate) {
         this.mContext = context;
         this.mDelegate = delegate;
-        this.API_URL = mContext.getString(R.string.URL_API) + "/api/LayerInfo";
     }
 
     @Override
@@ -50,7 +49,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            URL url = new URL(this.API_URL);
+            URL url = new URL(Constant.getInstance().LAYER_INFO);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);
@@ -109,8 +108,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
 //           LayerInfoDTG layerInfoDTG = new LayerInfoDTG();
             layerDTGS.add(new LayerInfoDTG(jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_id)),
                     jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_title)),
-                    jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_url)).replace("//sawagis.vn/arcgis/rest/services/",
-                            "//gis.capnuoccholon.com.vn/server/rest/services/"),
+                    jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_url)),
                     jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_iscreate)), jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_isdelete)),
                     jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_isedit)), jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_isview)),
                     jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_outfield)), jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_definition))));
