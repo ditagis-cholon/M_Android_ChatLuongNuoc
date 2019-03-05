@@ -1,31 +1,39 @@
 package cholon.hcm.ditagis.com.qlcln;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import cholon.hcm.ditagis.com.qlcln.async.CheckVersionAsycn;
 import cholon.hcm.ditagis.com.qlcln.async.LoginAsycn;
 import cholon.hcm.ditagis.com.qlcln.async.NewLoginAsycn;
+import cholon.hcm.ditagis.com.qlcln.entities.DApplication;
 import cholon.hcm.ditagis.com.qlcln.entities.entitiesDB.User;
 import cholon.hcm.ditagis.com.qlcln.utities.CheckConnectInternet;
 import cholon.hcm.ditagis.com.qlcln.utities.Preference;
 
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView mTxtUsername;
     private TextView mTxtPassword;
     private boolean isLastLogin;
     private TextView mTxtValidation;
+    private DApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        mApplication = (DApplication) getApplication();
         Button btnLogin = (findViewById(R.id.btnLogin));
         btnLogin.setOnClickListener(this);
         findViewById(R.id.txt_login_changeAccount).setOnClickListener(this);
@@ -55,6 +63,58 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             findViewById(R.id.layout_login_username).setVisibility(View.GONE);
         }
 
+
+        try {
+            if (!mApplication.isCheckedVersion()) {
+                mApplication.setCheckedVersion(true);
+                new CheckVersionAsycn(this, output -> {
+                    if (output != null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LogInActivity.this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
+                        builder.setCancelable(true)
+                                .setPositiveButton("CẬP NHẬT", (dialogInterface, i) -> {
+                                    goURLBrowser(output.getLink());
+                                }).setTitle("Có phiên bản mới");
+                        boolean isDeveloper = false;
+                        if (!output.getType().equals("RELEASE")) {
+                            int anInt = Settings.Secure.getInt(this.getContentResolver(),
+                                    Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0);
+                            if (anInt != 0)
+                                isDeveloper = true;
+
+                        }
+                        if (isDeveloper)
+                            builder.setMessage("Bạn là người phát triển ứng dụng! Bạn có muốn cập nhật lên phiên bản ".concat(output.getVersionCode()).concat("?"));
+                        else
+                            builder.setMessage("Bạn có muốn cập nhật lên phiên bản ".concat(output.getVersionCode().concat("?")));
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    } else {
+                        Toast.makeText(LogInActivity.this, "Phiên bản hiện tại là mới nhất", Toast.LENGTH_LONG).show();
+                    }
+
+//                    bubbleShowCaseSequence.show();
+                }).execute(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(this, "Có lỗi xảy ra khi kiểm tra phiên bản", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void goURLBrowser(String url) {
+        boolean result = false;
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+
+        try {
+            startActivity(intent);
+            result = true;
+        } catch (Exception ignored) {
+        }
     }
 
     private void login() {
@@ -103,12 +163,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void handleLoginSuccess(User user) {
 
 
-        Preference.getInstance().savePreferences(getString(R.string.preference_username),user.getUserName());
+        Preference.getInstance().savePreferences(getString(R.string.preference_username), user.getUserName());
         Preference.getInstance().savePreferences(getString(R.string.preference_password), user.getPassWord());
         Preference.getInstance().savePreferences(getString(R.string.preference_displayname), user.getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
-    Intent intent = new Intent(this, QuanLyChatLuongNuoc.class);
+        Intent intent = new Intent(this, QuanLyChatLuongNuoc.class);
 
         startActivity(intent);
     }

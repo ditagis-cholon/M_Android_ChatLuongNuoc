@@ -18,8 +18,8 @@ public class Constant {
     public static final String IDMAUKIEMNGHIEM = "IDMauKiemNghiem";
     public static final String DIACHI = "DiaChi";
     public static final String NGAY_CAP_NHAT = "NgayCapNhat";
-        public static final String SERVER_API = "https://gis.capnuoccholon.com.vn/cholon/api";
-//    private final String SERVER_API = "http://sawagis.vn/ /api";
+    public static final String SERVER_API = "https://gis.capnuoccholon.com.vn/cholon/api";
+    //    private final String SERVER_API = "http://sawagis.vn/ /api";
     public String API_LOGIN;
 
     {
@@ -43,6 +43,17 @@ public class Constant {
 
     {
         IS_ACCESS = SERVER_API + "/Account/IsAccess/m_qlcln";
+    }
+
+    public class URL_API {
+        public static final String CHECK_VERSION = SERVER_API + "/versioning/CLN?version=%s";
+
+    }
+
+    public class HTTPRequest {
+        public static final String GET_METHOD = "GET";
+        public static final String POST_METHOD = "POST";
+        public static final String AUTHORIZATION = "Authorization";
     }
 
     private static Constant mInstance = null;
