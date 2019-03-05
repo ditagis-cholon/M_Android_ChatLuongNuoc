@@ -18,8 +18,8 @@ public class Constant {
     public static final String IDMAUKIEMNGHIEM = "IDMauKiemNghiem";
     public static final String DIACHI = "DiaChi";
     public static final String NGAY_CAP_NHAT = "NgayCapNhat";
-    //    public static final String SERVER_API = "http://gis.capnuoccholon.com.vn/cholon/api";
-    private final String SERVER_API = "http://sawagis.vn/cholon/api";
+        public static final String SERVER_API = "https://gis.capnuoccholon.com.vn/cholon/api";
+//    private final String SERVER_API = "http://sawagis.vn/ /api";
     public String API_LOGIN;
 
     {
